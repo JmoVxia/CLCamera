@@ -7,9 +7,10 @@ install! 'cocoapods', :deterministic_uuids => false
 
 inhibit_all_warnings!
 
-target 'CLCarmera' do
+target 'CLCamera' do
 
 pod 'SnapKit'
+pod 'SwiftFormat/CLI'
 
 
 end
