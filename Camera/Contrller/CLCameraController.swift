@@ -18,11 +18,11 @@ public protocol CLCameraControllerDelegate: AnyObject {
 // MARK: - JmoVxia---类-属性
 
 public class CLCameraController: UIViewController {
-    public init(config: ((CLCameraConfig) -> Void)? = nil) {
+    public init(config: ((inout CLCameraConfig) -> Void)? = nil) {
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .fullScreen
         modalPresentationCapturesStatusBarAppearance = true
-        config?(self.config)
+        config?(&self.config)
     }
 
     @available(*, unavailable)
@@ -38,7 +38,7 @@ public class CLCameraController: UIViewController {
         return view
     }()
 
-    private lazy var hepler: CLCameraHelper = {
+    private lazy var helper: CLCameraHelper = {
         let helper = CLCameraHelper(config: config)
         helper.delegate = self
         return helper
@@ -130,7 +130,7 @@ public extension CLCameraController {
 
 private extension CLCameraController {
     func setupPreviewLayer() {
-        hepler.setupPreviewLayer(to: controlView.previewContentView)
+        helper.setupPreviewLayer(to: controlView.previewContentView)
     }
 
     func showAnimation() {
@@ -141,7 +141,7 @@ private extension CLCameraController {
     }
 
     func stopRunning() {
-        hepler.stopRunning()
+        helper.stopRunning()
     }
 
     func showError(_ error: CLCameraError) {
@@ -185,31 +185,31 @@ extension CLCameraController: CLCameraControlDelegate {
     }
 
     func cameraControlDidTapChangeCamera(_ controlView: CLCameraControlView) {
-        hepler.switchCamera()
+        helper.switchCamera()
     }
 
     func cameraControlDidTakePhoto(_ controlView: CLCameraControlView) {
-        hepler.capturePhoto()
+        helper.capturePhoto()
     }
 
     func cameraControlDidBeginTakingVideo(_ controlView: CLCameraControlView) {
-        hepler.startRecordingVideo()
+        helper.startRecordingVideo()
     }
 
     func cameraControlDidEndTakingVideo(_ controlView: CLCameraControlView) {
-        hepler.stopRecordingVideo()
+        helper.stopRecordingVideo()
     }
 
     func cameraControl(_ controlView: CLCameraControlView, didChangeVideoZoom zoomScale: Double) {
-        hepler.zoom(zoomScale)
+        helper.zoom(zoomScale)
     }
 
     func cameraControl(_ controlView: CLCameraControlView, didFocusAt point: CGPoint) {
-        hepler.focusAt(point)
+        helper.focusAt(point)
     }
 
     func cameraControlDidPrepareForZoom(_ controlView: CLCameraControlView) {
-        hepler.prepareForZoom()
+        helper.prepareForZoom()
     }
 }
 

@@ -38,6 +38,6 @@ public struct CLCameraConfig {
 ## cocoapods
 
 ```swift
-pod 'CLCamera', :git => 'https://github.com/JmoVxia/CLCamera.git'
+pod 'CLCamera'
 ```
 

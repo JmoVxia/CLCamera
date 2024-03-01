@@ -45,7 +45,7 @@ class CLCameraButton: UIView {
         layer.frame = CGRect(origin: .zero, size: intrinsicContentSize)
         layer.fillColor = UIColor.clear.cgColor
         layer.strokeColor = UIColor.black.cgColor
-        layer.lineCap = .square
+        layer.lineCap = .round
         layer.lineWidth = 5
         layer.strokeEnd = 0
         layer.path = {
