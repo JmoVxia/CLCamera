@@ -41,3 +41,7 @@ public struct CLCameraConfig {
 pod 'CLCamera'
 ```
 
+## 使用
+
+使用参考[demo](https://github.com/JmoVxia/CLDemo)
+
