@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = 'CLCamera'
-  s.version      = '1.0.1'
+  s.version      = '1.0.2'
   s.summary      = 'Swift版自定义相机'
   s.description  = <<-DESC
                    CLCarmera是自定义相机的封装.

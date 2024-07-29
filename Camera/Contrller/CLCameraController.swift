@@ -35,10 +35,11 @@ public class CLCameraController: UIViewController {
     private lazy var controlView: CLCameraControlView = {
         let view = CLCameraControlView(config: config)
         view.delegate = self
+        cameraHelper.setupPreviewLayer(to: view.previewContentView)
         return view
     }()
 
-    private lazy var helper: CLCameraHelper = {
+    private lazy var cameraHelper: CLCameraHelper = {
         let helper = CLCameraHelper(config: config)
         helper.delegate = self
         return helper
@@ -64,7 +65,7 @@ public extension CLCameraController {
         super.viewDidLoad()
         setupUI()
         makeConstraints()
-        configData()
+        requestPermissions()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -98,12 +99,11 @@ private extension CLCameraController {
 // MARK: - JmoVxia---数据
 
 private extension CLCameraController {
-    func configData() {
+    func requestPermissions() {
         CLPermissions.request([.camera, .microphone]) { state in
             guard CLPermissions.isAllowed(.camera) else { return self.showError(.cameraPermissionDenied) }
             guard CLPermissions.isAllowed(.microphone) else { return self.showError(.microphonePermissionDenied) }
             DispatchQueue.main.async {
-                self.setupPreviewLayer()
                 self.showAnimation()
             }
         }
@@ -129,19 +129,15 @@ public extension CLCameraController {
 // MARK: - JmoVxia---私有方法
 
 private extension CLCameraController {
-    func setupPreviewLayer() {
-        helper.setupPreviewLayer(to: controlView.previewContentView)
-    }
-
     func showAnimation() {
         controlView.showRunningAnimation()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.25) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
             self.controlView.showFocusAnimationAt(point: self.controlView.previewContentView.center)
         }
     }
 
     func stopRunning() {
-        helper.stopRunning()
+        cameraHelper.stopRunning()
     }
 
     func showError(_ error: CLCameraError) {
@@ -185,31 +181,31 @@ extension CLCameraController: CLCameraControlDelegate {
     }
 
     func cameraControlDidTapChangeCamera(_ controlView: CLCameraControlView) {
-        helper.switchCamera()
+        cameraHelper.switchCamera()
     }
 
     func cameraControlDidTakePhoto(_ controlView: CLCameraControlView) {
-        helper.capturePhoto()
+        cameraHelper.capturePhoto()
     }
 
     func cameraControlDidBeginTakingVideo(_ controlView: CLCameraControlView) {
-        helper.startRecordingVideo()
+        cameraHelper.startRecordingVideo()
     }
 
     func cameraControlDidEndTakingVideo(_ controlView: CLCameraControlView) {
-        helper.stopRecordingVideo()
+        cameraHelper.stopRecordingVideo()
     }
 
     func cameraControl(_ controlView: CLCameraControlView, didChangeVideoZoom zoomScale: Double) {
-        helper.zoom(zoomScale)
+        cameraHelper.zoom(zoomScale)
     }
 
     func cameraControl(_ controlView: CLCameraControlView, didFocusAt point: CGPoint) {
-        helper.focusAt(point)
+        cameraHelper.focusAt(point)
     }
 
     func cameraControlDidPrepareForZoom(_ controlView: CLCameraControlView) {
-        helper.prepareForZoom()
+        cameraHelper.prepareForZoom()
     }
 }
 

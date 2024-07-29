@@ -40,12 +40,40 @@ class CLCameraHelper: NSObject {
     private let captureSession = AVCaptureSession()
     private let photoOutput = AVCapturePhotoOutput()
     private let movieFileOutput = AVCaptureMovieFileOutput()
-    private var previewLayer: AVCaptureVideoPreviewLayer?
     private var videoDeviceInput: AVCaptureDeviceInput?
     private var audioDeviceInput: AVCaptureDeviceInput?
     private var videoCurrentZoom = 1.0
     private var currentOrientation = CLCameraOrientation.CaptureOrientation.up
     private var config: CLCameraConfig
+    private lazy var previewLayer: AVCaptureVideoPreviewLayer = {
+        let layer = AVCaptureVideoPreviewLayer(session: captureSession)
+        layer.videoGravity = .resizeAspectFill
+        layer.frame = .init(origin: .zero, size: .init(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.size.height - 130 - safeAreaInsets.bottom))
+        return layer
+    }()
+
+    /// 切换到主线程同步执行
+    @discardableResult private func mainSync<T>(execute block: () -> T) -> T {
+        guard !Thread.isMainThread else { return block() }
+        return DispatchQueue.main.sync { block() }
+    }
+
+    /// 安全区域
+    private var safeAreaInsets: UIEdgeInsets { mainSync { keyWindow?.safeAreaInsets ?? .zero } }
+
+    /// keyWindow
+    private var keyWindow: UIWindow? {
+        mainSync {
+            if #available(iOS 13.0, *) {
+                UIApplication.shared.connectedScenes
+                    .compactMap { $0 as? UIWindowScene }
+                    .flatMap(\.windows)
+                    .first { $0.isKeyWindow }
+            } else {
+                UIApplication.shared.keyWindow
+            }
+        }
+    }
 }
 
 private extension CLCameraHelper {
@@ -181,11 +209,7 @@ extension CLCameraHelper {
 
 extension CLCameraHelper {
     func setupPreviewLayer(to superView: UIView) {
-        let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.videoGravity = .resizeAspectFill
-        previewLayer.frame = superView.bounds
         superView.layer.addSublayer(previewLayer)
-        self.previewLayer = previewLayer
     }
 }
 
@@ -256,7 +280,6 @@ extension CLCameraHelper {
     func focusAt(_ point: CGPoint) {
         lockVideoDeviceForConfiguration { [weak self] device in
             guard let self else { return }
-            guard let previewLayer else { return }
             let cameraPoint = previewLayer.captureDevicePointConverted(fromLayerPoint: point)
 
             if device.isFocusModeSupported(.continuousAutoFocus) {

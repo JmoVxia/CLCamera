@@ -41,8 +41,7 @@ class CLCameraControlView: UIView {
     }()
 
     private lazy var blurEffectView: UIVisualEffectView = {
-        let blurEffect = UIBlurEffect(style: .regular)
-        let view = UIVisualEffectView(effect: blurEffect)
+        let view = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         view.isUserInteractionEnabled = false
         view.backgroundColor = .black
         return view
